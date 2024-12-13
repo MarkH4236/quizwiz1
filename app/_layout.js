@@ -1,7 +1,6 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, View } from "react-native";
-import { FlashcardProvider } from "../handler/contextHandler";
 
 export default function Layout() {
   return (

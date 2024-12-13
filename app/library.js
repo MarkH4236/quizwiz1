@@ -62,6 +62,9 @@ export default function Library() {
       return (
         <View style={styles.container}>
           <View style={styles.cardQuestion}>
+            <TouchableOpacity style={styles.refresh} onPress={fetchQuestionSet}>
+              <Text style={styles.buttonText}>Refresh</Text>
+            </TouchableOpacity>
             <Text style={styles.title}>{currentCard.category}</Text>
             <Text style={styles.question}>{currentCard.question}</Text>
 
