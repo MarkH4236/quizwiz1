@@ -6,7 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { getFlashcards } from "./api";
+import { getFlashcards, deleteFlashcard } from "./api";
 
 export default function Library() {
   // Track selected card
@@ -23,10 +23,20 @@ export default function Library() {
       console.error(error);
     }
   };
-
   useEffect(() => {
     fetchQuestionSet();
   }, []);
+
+  const handleDelete = async (id) => {
+    try {
+      goBackToLibrary();
+      await deleteFlashcard(id);
+      setQuestionSet(questionSet.filter((item) => item.id !== id));
+      fetchQuestionSet();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   // Go to a specific card
   const openCard = (index) => {
@@ -59,59 +69,59 @@ export default function Library() {
     // Show card information
     const currentCard = questionSet[currentCardIndex];
 
-      return (
-        <View style={styles.container}>
-          <View style={styles.cardQuestion}>
-            <TouchableOpacity style={styles.refresh} onPress={fetchQuestionSet}>
-              <Text style={styles.buttonText}>Refresh</Text>
-            </TouchableOpacity>
-            <Text style={styles.title}>{currentCard.category}</Text>
-            <Text style={styles.question}>{currentCard.question}</Text>
-
-            {showAnswer && (
-              <Text style={styles.answer}>Answer: {currentCard.answer}</Text>
-            )}
-
-            {/* Show answer button */}
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => setShowAnswer(!showAnswer)}
-            >
-              <Text style={styles.buttonText}>
-                {showAnswer ? "Hide Answer" : "Show Answer"}
-              </Text>
-            </TouchableOpacity>
-
-            <View style={styles.navButtons}>
-              {/* Back button */}
-              <TouchableOpacity
-                style={[styles.button, styles.navButton]}
-                onPress={goToPreviousCard}
-                disabled={currentCardIndex === 0}
-              >
-                <Text style={styles.buttonText}>Back</Text>
-              </TouchableOpacity>
-
-              {/* Next Button */}
-              <TouchableOpacity
-                style={[styles.button, styles.navButton]}
-                onPress={goToNextCard}
-                disabled={currentCardIndex === questionSet.length - 1}
-              >
-                <Text style={styles.buttonText}>Next</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          {/* Library button */}
-          <TouchableOpacity
-            style={[styles.button, styles.backButton]}
-            onPress={goBackToLibrary}
-          >
-            <Text style={styles.buttonText}>Back to Library</Text>
+    return (
+      <View style={styles.container}>
+        <View style={styles.cardQuestion}>
+          <TouchableOpacity style={styles.refresh} onPress={() => handleDelete(currentCard.id)}>
+            <Text style={styles.buttonText}>Delete</Text>
           </TouchableOpacity>
+          <Text style={styles.title}>{currentCard.category}</Text>
+          <Text style={styles.question}>{currentCard.question}</Text>
+
+          {showAnswer && (
+            <Text style={styles.answer}>Answer: {currentCard.answer}</Text>
+          )}
+
+          {/* Show answer button */}
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setShowAnswer(!showAnswer)}
+          >
+            <Text style={styles.buttonText}>
+              {showAnswer ? "Hide Answer" : "Show Answer"}
+            </Text>
+          </TouchableOpacity>
+
+          <View style={styles.navButtons}>
+            {/* Back button */}
+            <TouchableOpacity
+              style={[styles.button, styles.navButton]}
+              onPress={goToPreviousCard}
+              disabled={currentCardIndex === 0}
+            >
+              <Text style={styles.buttonText}>Back</Text>
+            </TouchableOpacity>
+
+            {/* Next Button */}
+            <TouchableOpacity
+              style={[styles.button, styles.navButton]}
+              onPress={goToNextCard}
+              disabled={currentCardIndex === questionSet.length - 1}
+            >
+              <Text style={styles.buttonText}>Next</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      );
+
+        {/* Library button */}
+        <TouchableOpacity
+          style={[styles.button, styles.backButton]}
+          onPress={goBackToLibrary}
+        >
+          <Text style={styles.buttonText}>Back to Library</Text>
+        </TouchableOpacity>
+      </View>
+    );
   }
 
   //  Show the library list
@@ -127,10 +137,7 @@ export default function Library() {
         numColumns={2}
         columnWrapperStyle={styles.row}
         renderItem={({ item, index }) => (
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() => openCard(index)}
-          >
+          <TouchableOpacity style={styles.card} onPress={() => openCard(index)}>
             <Text style={styles.cardText}>{item.category}</Text>
           </TouchableOpacity>
         )}
@@ -155,7 +162,6 @@ export default function Library() {
   //   </View>
   // );;
 }
-
 
 const styles = StyleSheet.create({
   container: {
