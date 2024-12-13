@@ -23,3 +23,12 @@ export const getFlashcards = async () => {
     console.error(error);
   }
 };
+
+export const deleteFlashcard = async (id) => {
+  try {
+    const response = await api.delete(`/questionSet/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+}
